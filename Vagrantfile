@@ -60,6 +60,7 @@ Vagrant.configure("2") do |config|
 
     wget https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz
     /bin/zcat geckodriver-v0.26.0-linux64.tar.gz | tar -xpf -
+    rm -f geckodriver-v0.26.0-linux64.tar.gz
     mv geckodriver /usr/local/bin/
 
     cat<<REQ > /tmp/fuzzmgr.req
