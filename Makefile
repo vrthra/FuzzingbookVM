@@ -23,6 +23,7 @@ box-create: fuzzingbook.box
 fuzzingbook.box: $(ARTIFACT)
 	cd artifact && vagrant up
 	cd artifact && vagrant ssh -c '~/sync_to_home.sh'
+	cd artifact && vagrant ssh -c 'cd fuzzingbook && (cat /vagrant/fuzzingbook/patch.patch | patch -p1; echo)'
 	cd artifact && vagrant ssh -c 'cd fuzzingbook && make sitemap'
 	cd artifact && vagrant package --output ../fuzzingbook1.box --vagrantfile ../Vagrantfile.new
 	mv fuzzingbook1.box fuzzingbook.box
