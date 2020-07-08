@@ -7,7 +7,7 @@ clobber: clean;
 	-rm -rf .db
 results:; mkdir -p results
 
-artifact.tar.gz: Vagrantfile Makefile
+artifact.tar.gz: Vagrantfile
 	rm -rf artifact && mkdir -p artifact/fuzzingbook
 	cp README.md artifact/README.txt
 	cp -r README.md Makefile Vagrantfile artifact/fuzzingbook
@@ -31,7 +31,7 @@ fuzzingbook.box: $(ARTIFACT)
 box-hash:
 	md5sum fuzzingbook.box
 
-box-add: #| fuzzingbook.box
+box-add: fuzzingbook.box
 	-vagrant destroy $$(vagrant global-status | grep fuzzingbook | sed -e 's# .*##g')
 	rm -rf vtest && mkdir -p vtest && cp fuzzingbook.box vtest
 	cd vtest && vagrant box add fuzzingbook ./fuzzingbook.box
