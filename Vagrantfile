@@ -19,14 +19,16 @@ Vagrant.configure("2") do |config|
   # apt-get -y install openjdk-11-jre-headless make docker.io graphviz python3-venv python3-pip libjson-c-dev
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    apt-get -y install make graphviz python3.6 python3-venv python3-pip cmake pkg-config python3-software-properties python3-apt jq graphicsmagick-imagemagick-compat firefox
+    apt-get -y  --no-install-recommends install make graphviz python3.6 python3-venv python3-pip cmake pkg-config python3-software-properties python3-apt jq graphicsmagick-imagemagick-compat firefox clang cargo llvm rabbitmq-server locales patch remake bc groff ed texinfo vim tmux screen wget python3-distutils python3-setuptools python3-dev g++
+    apt-get -y  --no-install-recommends install texlive-latex-base texlive-latex-recommended texlive-science texlive-latex-extra texlive-fonts-recommended texlive-xetex texlive-generic-recommended dvipng ghostscript inkscape curl npm git libfreetype6-dev
+
     update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 2
     update-alternatives --install /usr/bin/python python /usr/bin/python3.6 2
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 2
 
     pip3 install wheel
-    pip3 install git+https://github.com/matplotlib/matplotlib#egg=matplotlib
-    pip3 install git+https://github.com/uds-se/pyan#egg=pyan
+    pip3 install git+https://github.com/uds-se/matplotlib.git@v3.1.1#egg=matplotlib
+    pip3 install git+https://github.com/uds-se/pyan.git#egg=pyan
     pip3 install ipypublish==0.6.7
     pip3 install showast enforce autopep8 mypy notedown requests z3-solver
     pip3 install git+https://github.com/MozillaSecurity/FuzzManager
@@ -47,6 +49,14 @@ Vagrant.configure("2") do |config|
     pip3 install jupyter_nbextensions_configurator
     jupyter contrib nbextension install --sys-prefix
     jupyter nbextension enable toc2/main --sys-prefix
+    jupyter nbextension enable exercise2/main --sys-prefix
+    jupyter nbextension enable codefolding/main --sys-prefix
+    jupyter nbextension enable collapsible_headings/main --sys-prefix
+    jupyter nbextension enable select_keymap/main --sys-prefix
+    jupyter nbextension enable spellchecker/main --sys-prefix
+    jupyter nbextension enable scratchpad/main --sys-prefix
+    jupyter nbextension enable code_prettify/autopep8 --sys-prefix
+    jupyter nbextension enable code_prettify/code_prettify --sys-prefix
 
     echo cd /home/vagrant/fuzzingbook >  /home/vagrant/startjupyter.sh
     echo jupyter notebook --ip 0.0.0.0 --port 8888 >> /home/vagrant/startjupyter.sh
@@ -58,7 +68,7 @@ Vagrant.configure("2") do |config|
     echo rsync -az /home/vagrant/fuzzingbook/ /vagrant/fuzzingbook/fuzzingbook/ >  /home/vagrant/sync_from_home.sh
     chmod +x /home/vagrant/sync_from_home.sh
 
-    wget https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz
+    curl -sS -o geckodriver-v0.26.0-linux64.tar.gz --location https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz
     /bin/zcat geckodriver-v0.26.0-linux64.tar.gz | tar -xpf -
     rm -f geckodriver-v0.26.0-linux64.tar.gz
     mv geckodriver /usr/local/bin/
@@ -77,9 +87,9 @@ certifi>=2018.4.16
 chardet>=3.0.4,<3.1
 configparser>=3.5.0,<3.6; python_version == '2.7'
 coverage==4.5.2
-Django>=1.11.20,<3
+Django>=1.11.20,<2.0
 django-chartjs==1.3
-djangorestframework>=3.9.4
+djangorestframework>=3.9.4,<3.11
 enum34>=1.1.6,<1.2; python_version == '2.7'
 fasteners>=0.14.1,<0.15
 flake8>=3.7.9,<3.8
@@ -120,5 +130,19 @@ markdown
 REQ
   pip3 install -r /tmp/fuzzmgr.req
 
+# Here, we specify package versions. This simplifies updates of individual packages
+# and dependencies without changing the actual routines within the Dockerfile.
+FUZZMANAGER_VERSION=0.3.2
+GRCOV_VERSION=0.3.2
+
+sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+echo 'LANG="en_US.UTF-8"' > /etc/default/locale
+dpkg-reconfigure --frontend=noninteractive locales
+update-locale LANG=en_US.UTF-8
+pip3 install https://github.com/MozillaSecurity/FuzzManager/archive/${FUZZMANAGER_VERSION}.tar.gz
+npm install -g configurable-http-proxy
+curl -sS -o grcov-linux-x86_64.tar.bz2 --location https://github.com/mozilla/grcov/releases/download/v${GRCOV_VERSION}/grcov-linux-x86_64.tar.bz2
+tar -xjf grcov-linux-x86_64.tar.bz2
+mv grcov /usr/local/bin/
   SHELL
 end
