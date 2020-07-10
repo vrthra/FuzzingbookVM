@@ -39,8 +39,7 @@ fuzzingbook.box: $(ARTIFACT)
 	cd artifact && vagrant ssh -c 'curl -sS -o settings.py.patch --location https://raw.githubusercontent.com/uds-se/fuzzingbook/master/deploy/fuzzingbook-base/settings.py.patch'
 	cd artifact && vagrant ssh -c 'cat settings.py.patch | (cd FuzzManager && patch -p1 )'
 	cd artifact && vagrant ssh -c 'curl -sS -o jupyter_notebook_config.py --location https://raw.githubusercontent.com/uds-se/fuzzingbook/master/deploy/fuzzingbook-base/jupyter_notebook_config.py'
-	cd artifact && vagrant ssh -c 'cat jupyter_notebook_config.py | sed -e "s/#c.NotebookApp.ip = .localhost./c.NotebookApp.ip = \"0.0.0.0\"/g" -e "s/^c.NotebookApp.default_url.*/c.NotebookApp.default_url = \"/notebooks/notebooks/00_Table_of_Contents.ipynb\""
-> /home/vagrant/.jupyter/jupyter_notebook_config.py'
+	cd artifact && vagrant ssh -c 'cat jupyter_notebook_config.py | sed -e "s/#c.NotebookApp.ip = .localhost./c.NotebookApp.ip = \"0.0.0.0\"/g" -e "s/^c.NotebookApp.default_url.*/c.NotebookApp.default_url = \"/notebooks/notebooks/00_Table_of_Contents.ipynb\"" > /home/vagrant/.jupyter/jupyter_notebook_config.py'
 	cd artifact && vagrant ssh -c '~/sync_to_home.sh'
 	cd artifact && vagrant ssh -c 'cd fuzzingbook && (cat /vagrant/fuzzingbook/patch.patch | patch -p1; echo)'
 	cd artifact && vagrant ssh -c 'rm -rf fuzzmanager.tar.gz  grcov-linux-x86_64.tar.bz2  jupyter_notebook_config.py  settings.py.patch  sync_from_home.sh  sync_to_home.sh'
