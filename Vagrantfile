@@ -59,8 +59,13 @@ Vagrant.configure("2") do |config|
     jupyter nbextension enable code_prettify/code_prettify --sys-prefix
 
     echo cd /home/vagrant/fuzzingbook >  /home/vagrant/startjupyter.sh
-    echo jupyter notebook --ip 0.0.0.0 --port 8888 >> /home/vagrant/startjupyter.sh
+    echo jupyter notebook --ip 0.0.0.0 --port 8888 --no-browser >> /home/vagrant/startjupyter.sh
     chmod +x /home/vagrant/startjupyter.sh
+
+    echo cd /home/vagrant/fuzzingbook >  /home/vagrant/compilebook.sh
+    echo make sitemap >> /home/vagrant/compilebook.sh
+    echo make >> /home/vagrant/compilebook.sh
+    chmod +x /home/vagrant/compilebook.sh
 
     echo rsync -az /vagrant/fuzzingbook/fuzzingbook/ /home/vagrant/fuzzingbook/ >  /home/vagrant/sync_to_home.sh
     chmod +x /home/vagrant/sync_to_home.sh
