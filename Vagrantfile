@@ -32,6 +32,7 @@ Vagrant.configure("2") do |config|
     pip3 install ipypublish==0.6.7
     pip3 install showast enforce autopep8 mypy notedown requests z3-solver
     pip3 install git+https://github.com/MozillaSecurity/FuzzManager
+    pip3 install git+https://github.com/vrthra-forks/nbterm
 
     pip3 install numpy
     pip3 install scipy
